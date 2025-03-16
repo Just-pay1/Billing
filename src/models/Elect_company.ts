@@ -19,8 +19,8 @@ Elect.init(
       type: DataTypes.FLOAT,
       allowNull: false,
     },
-    dueDate: {
-      type: DataTypes.DATE,
+    month: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     status: {
