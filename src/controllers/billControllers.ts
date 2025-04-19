@@ -1,7 +1,7 @@
 // controllers/billController.ts
 import { Request, Response } from "express";
 import { fetchBillFromCompany } from "../services/billService";
-import { getBillSchema } from "../validators/billValidation";
+import { getBillSchema } from "../schemas/billValidation";
 
 
 export const getBill = async (req: Request, res: Response): Promise<void> => {
