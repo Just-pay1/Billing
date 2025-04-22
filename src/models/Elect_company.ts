@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import sequelize from "../database/database";
+import sequelize from "../db/database";
 
 
 
@@ -24,7 +24,7 @@ Elect.init(
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM("pending", "paid", "overdue"),
+      type: DataTypes.ENUM("pending", "paid", "overdue",),
       allowNull: false,
       defaultValue: "pending",
     },
