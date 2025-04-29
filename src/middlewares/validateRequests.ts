@@ -8,7 +8,7 @@ export const validateSchemas =
             const { error, value } = schema.validate(req[type], { abortEarly: false });
 
             if (!error) {
-                req[type] = value;
+                req.body = value;
                 return next();
             }
 

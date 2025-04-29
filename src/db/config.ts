@@ -11,18 +11,23 @@ export const mysql = new Sequelize(
         password: DB_PASSWORD,
         host: DB_HOST,
         dialect: 'mysql',
-        logging: (msg) => {
-            if (msg.toLowerCase().includes('error')) {
-                console.error(msg); // Log only errors
-            }
-        }
+        // logging: (msg) => {
+        //     if (msg.toLowerCase().includes('error')) {
+        //         console.error(msg); // Log only errors
+        //     }
+        // }
     }
 )
 
 export async function dbConnection() {
     try {
+        // init models 
         Bill.initialize(mysql);
         ActiveMerchants.initialize(mysql);
+
+        // relations
+        ActiveMerchants.associate();
+        Bill.associate();
 
         await mysql.authenticate();
         await mysql.sync({ force: false });
