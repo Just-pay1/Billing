@@ -23,6 +23,8 @@ export interface MerchantAttributes {
     settlement_period: string;
     commission_amount: number;
     commission_setup: string;
+    longitude: string;
+    latitude: string
 }
 
 interface MerchantCreationAttributes extends MerchantAttributes { }
@@ -52,6 +54,8 @@ export class ActiveMerchants
     declare settlement_period: string;
     declare commission_amount: number;
     declare commission_setup: string;
+    declare longitude: string;
+    declare latitude: string;
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
@@ -150,7 +154,15 @@ export class ActiveMerchants
                 commission_amount: {
                     type: DataTypes.INTEGER,
                     allowNull: false,
-                }
+                },
+                longitude: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
+                latitude: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                },
             },
             {
                 tableName: 'active_merchants',
