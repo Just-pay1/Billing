@@ -74,17 +74,16 @@ export class ElectricBill
         )
     }
 
-    static async generateBills(){
-    
+    static async generateBills() {
         const today = new Date();
     
-        const bills = Array.from({ length: 20 }, (_, index) => {
+        const bills = Array.from({ length: 1001 }, (_, index) => {
             const dueDate = new Date(today);
             dueDate.setMonth(dueDate.getMonth() + 1); // add 1 month
     
             return {
                 bill_id: uuidv4(),
-                bill_code: `BILL${String(index + 1).padStart(4, '0')}`,
+                bill_code: `BILL${String(index).padStart(4, '0')}`, // from BILL0000 to BILL1000
                 amount: parseFloat((Math.random() * 500 + 50).toFixed(2)), // random amount between 50 and 550
                 issue_date: today,
                 due_date: dueDate,
@@ -94,6 +93,6 @@ export class ElectricBill
         });
     
         await ElectricBill.bulkCreate(bills);
-        console.log('20 bills have been created with due dates 1 month later.');
+        console.log('1001 bills have been created with due dates 1 month later.');
     }
 }

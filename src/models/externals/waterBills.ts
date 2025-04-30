@@ -1,4 +1,5 @@
 import { Model, DataTypes, Optional, Sequelize } from 'sequelize';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export interface BillAttributes {
@@ -70,5 +71,28 @@ export class WaterBill
                 underscored: true,
             }
         )
+    }
+
+    static async generateBills() {
+        const today = new Date();
+    
+        const bills = Array.from({ length: 1000 }, (_, i) => {
+            const index = i + 1001; // start from 1001 up to 2000
+            const dueDate = new Date(today);
+            dueDate.setMonth(dueDate.getMonth() + 1); // add 1 month
+    
+            return {
+                bill_id: uuidv4(),
+                bill_code: `BILL${String(index).padStart(4, '0')}`, // from BILL1001 to BILL2000
+                amount: parseFloat((Math.random() * 500 + 50).toFixed(2)), // random amount between 50 and 550
+                issue_date: today,
+                due_date: dueDate,
+                status: 'pending' as const,
+                payment_date: null,
+            };
+        });
+    
+        await WaterBill.bulkCreate(bills);
+        console.log('1000 bills (BILL1001 to BILL2000) have been created with due dates 1 month later.');
     }
 }
