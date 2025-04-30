@@ -24,6 +24,11 @@ export class BillsRoutes {
             asyncHandler(this.controller.waterBillDetails)
         )
 
+        this.router.get('/gas-bill-details', 
+            validateSchemas(billDetails, 'query'),
+            asyncHandler(this.controller.gasBillDetails)
+        )
+
         this.router.post('/delete-bill', 
             validateSchemas(deleteBill),
             asyncHandler(this.controller.deleteBill)

@@ -23,6 +23,13 @@ export class BillController {
         responseHandler(res, 200, 'Bill is fetched successfully!', response)
     }
 
+    public gasBillDetails = async (req: Request, res: Response, next: NextFunction) => {
+        const merchant_id = req.body.merchant_id;
+        const bill_code = req.body.bill_code;
+        const response = await this.service.getGasBill(merchant_id, bill_code)
+        responseHandler(res, 200, 'Bill is fetched successfully!', response)
+    }
+
     public deleteBill = async (req: Request, res: Response, next: NextFunction) => {
         const response = await this.service.deleteBill(req.body.bill_id)
         responseHandler(res, 200, 'Bill is deleted successfully!', response)

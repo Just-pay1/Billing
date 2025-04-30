@@ -27,6 +27,8 @@ export async function externalDbConnection() {
 
         // await ElectricBill.generateBills()
         // await WaterBill.generateBills()
+        // await GasBill.generateBills()
+
 
 
         await mysql.authenticate();
