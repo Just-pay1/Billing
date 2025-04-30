@@ -11,11 +11,17 @@ export const mysql = new Sequelize(
         password: DB_PASSWORD,
         host: DB_HOST,
         dialect: 'mysql',
-        // logging: (msg) => {
-        //     if (msg.toLowerCase().includes('error')) {
-        //         console.error(msg); // Log only errors
-        //     }
-        // }
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false // disables cert verification
+            }
+        },
+        logging: (msg) => {
+            if (msg.toLowerCase().includes('error')) {
+                console.error(msg); // Log only errors
+            }
+        }
     }
 )
 
