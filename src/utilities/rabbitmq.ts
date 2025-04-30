@@ -1,5 +1,5 @@
 import amqp, { Channel, ChannelModel, ConsumeMessage } from "amqplib";
-import { ACTIVE_MERCHANTS, RABBITMQ_IP, MAILS_QUEUE, RABBITMQ_PORT } from "../config";
+import { ACTIVE_MERCHANTS, RABBITMQ_IP, MAILS_QUEUE, RABBITMQ_PORT, RABBITMQ_USERNAME, RABBITMQ_PASSWORD } from "../config";
 import { InternalService } from "../services/internal-service";
 
 
@@ -26,9 +26,12 @@ export class RabbitMQ {
             // init connection and channels
             // this.connection = await amqp.connect(this.url);
             this.connection = await amqp.connect({
-                protocol: 'amqp', // or 'amqps' if using SSL
+                protocol: 'amqps', // or 'amqps' if using SSL
                 hostname: RABBITMQ_IP || 'localhost', // or the IP address of your RabbitMQ container
                 port: Number(RABBITMQ_PORT) || 5672,
+                username: RABBITMQ_USERNAME,
+                password: RABBITMQ_PASSWORD,
+                vhost: RABBITMQ_USERNAME,
                 frameMax: 8192 // Ensure this is at least 8192
             });
 

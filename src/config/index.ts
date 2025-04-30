@@ -14,5 +14,7 @@ export const EXTERNAL_DB_NAME = process.env.EXTERNAL_DB_NAME;
 // RABBITMQ 
 export const RABBITMQ_IP = process.env.RABBITMQ_IP;
 export const RABBITMQ_PORT = process.env.RABBITMQ_PORT;
+export const RABBITMQ_USERNAME = process.env.RABBITMQ_USERNAME;
+export const RABBITMQ_PASSWORD = process.env.RABBITMQ_PASSWORD;
 export const ACTIVE_MERCHANTS = process.env.ACTIVE_MERCHANTS;
 export const MAILS_QUEUE = process.env.MAILS_QUEUE
