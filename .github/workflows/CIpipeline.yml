@@ -1,0 +1,47 @@
+name: Build and Push Docker Image of billing service
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Login to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.ACR_USERNAME }}.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build Docker image
+      run: |
+        docker build  \
+             --build-arg PORT="${{ secrets.PORT }}" \
+             --build-arg DB_USERNAME="${{ secrets.DB_USERNAME }}" \
+             --build-arg DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+             --build-arg DB_HOST="${{ secrets.DB_HOST }}" \
+             --build-arg DB_NAME="${{ secrets.DB_NAME }}" \
+             --build-arg EXTERNAL_DB_NAME="${{ secrets.EXTERNAL_DB_NAME }}" \
+             --build-arg RABBITMQ_IP="${{ secrets.RABBITMQ_IP }}" \
+             --build-arg RABBITMQ_PORT="${{ secrets.RABBITMQ_PORT }}" \
+             --build-arg RABBITMQ_USERNAME="${{ secrets.RABBITMQ_USERNAME }}" \
+             --build-arg RABBITMQ_PASSWORD="${{ secrets.RABBITMQ_PASSWORD }}" \
+             --build-arg ACTIVE_MERCHANTS="${{ secrets.ACTIVE_MERCHANTS }}" \
+             --build-arg MAILS_QUEUE="${{ secrets.MAILS_QUEUE }}" \
+             -t billing .
+
+    - name: Tag Docker image
+      run: |
+        docker tag billing ${{ secrets.ACR_USERNAME }}.azurecr.io/billing:latest
+
+    - name: Push Docker image to Azure Container Registry
+      run: |
+        docker push ${{ secrets.ACR_USERNAME }}.azurecr.io/billing:latest
+
