@@ -9,7 +9,7 @@ async function startApp() {
     await dbConnection();
     await externalDbConnection();
     const rabbitMQ = await RabbitMQ.getInstance();
-    // await rabbitMQ.consumeFromMerchantsQueue();
+    await rabbitMQ.consumeFromMerchantsQueue();
 }
 
 const server = app.listen(port, () => {

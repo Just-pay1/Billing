@@ -53,6 +53,7 @@ export class RabbitMQ {
     }
 
     public async consumeFromMerchantsQueue(){
+        console.log(`== Started to consume from ${ACTIVE_MERCHANTS} ==`)
         await this.activeMerchantsChannel?.consume(ACTIVE_MERCHANTS!, async (msg: ConsumeMessage | null) => {
             if (msg) {
                 const data = JSON.parse(msg.content.toString());
