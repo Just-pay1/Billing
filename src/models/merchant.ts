@@ -22,9 +22,10 @@ export interface MerchantAttributes {
     settlement_time: string;
     settlement_period: string;
     commission_amount: number;
-    commission_setup: string;
+    commission_setup: 'Percentage' | 'Fixed';
     longitude: string;
-    latitude: string
+    latitude: string;
+    fee_from: 'user' | 'merchant';
 }
 
 interface MerchantCreationAttributes extends MerchantAttributes { }
@@ -53,9 +54,10 @@ export class ActiveMerchants
     declare settlement_time: string;
     declare settlement_period: string;
     declare commission_amount: number;
-    declare commission_setup: string;
+    declare commission_setup: 'Percentage' | 'Fixed';
     declare longitude: string;
     declare latitude: string;
+    declare fee_from: 'user' | 'merchant';
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
@@ -148,11 +150,11 @@ export class ActiveMerchants
                     allowNull: false,
                 },
                 commission_setup: {
-                    type: DataTypes.STRING,
+                    type: DataTypes.ENUM('Percentage', 'Fixed'),
                     allowNull: false,
                 },
                 commission_amount: {
-                    type: DataTypes.INTEGER,
+                    type: DataTypes.DECIMAL(10, 2),
                     allowNull: false,
                 },
                 longitude: {
@@ -163,6 +165,11 @@ export class ActiveMerchants
                     type: DataTypes.STRING,
                     allowNull: false,
                 },
+                fee_from: {
+                    type: DataTypes.ENUM('user', 'merchant'),
+                    defaultValue: 'user',
+                    allowNull: false,
+                }
             },
             {
                 tableName: 'active_merchants',

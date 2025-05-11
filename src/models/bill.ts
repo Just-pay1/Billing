@@ -7,16 +7,19 @@ export interface BillAttributes {
     bill_code: string;
     merchant_id: string;
     amount: number;
+    fee: number;
+    paid_amount: number | null; 
     issue_date: Date;
     due_date: Date;
     status: 'pending' | 'paid' | 'overdue' | 'failed';
     payment_date?: Date | null;
-    payment_method: 'credit' | 'debit' | 'prepaid' | null;
-    user_id: string | null; // user who paid the bill
+    // payment_method: 'credit' | 'debit' | 'prepaid' | null;
+    user_id: string | null; // user who paid the bill;
+    model: string;
 }
 
 // for creation
-interface BillCreationAttributes extends Optional<BillAttributes, 'payment_method' | 'payment_date' | 'user_id'> { }
+interface BillCreationAttributes extends Optional<BillAttributes, 'payment_date' | 'user_id'> { }
 
 export class Bill
     extends Model<BillAttributes, BillCreationAttributes>
@@ -25,12 +28,15 @@ export class Bill
     declare bill_code: string;
     declare merchant_id: string;
     declare amount: number;
+    declare fee: number;
+    declare paid_amount: number | null; 
     declare issue_date: Date;
     declare due_date: Date;
     declare status: 'pending' | 'paid' | 'overdue' | 'failed';
     declare payment_date: Date | null;
-    declare payment_method: 'credit' | 'debit' | 'prepaid' | null;
+    // declare payment_method: 'credit' | 'debit' | 'prepaid' | null;
     declare user_id: string | null;
+    declare model: string;
 
     declare readonly created_at: Date;
     declare readonly updated_at: Date;
@@ -63,6 +69,15 @@ export class Bill
                     type: DataTypes.DECIMAL(10, 2),
                     allowNull: false,
                 },
+                fee: {
+                    type: DataTypes.DECIMAL(10, 2),
+                    allowNull: false,
+                },
+                paid_amount: {
+                    type: DataTypes.DECIMAL(10, 2),
+                    allowNull: true,
+                    defaultValue: null
+                },
                 due_date: {
                     type: DataTypes.DATE,
                     allowNull: false,
@@ -81,16 +96,20 @@ export class Bill
                     defaultValue: null,
                     allowNull: true,
                 },
-                payment_method: {
-                    type: DataTypes.ENUM('credit', 'debit', 'prepaid'),
-                    allowNull: true,
-                    defaultValue: null,
-                },
+                // payment_method: {
+                //     type: DataTypes.ENUM('credit', 'debit', 'prepaid'),
+                //     allowNull: true,
+                //     defaultValue: null,
+                // },
                 user_id: {
                     type: DataTypes.UUID,
                     allowNull: true,
                     defaultValue: null,
                 },
+                model: {
+                    type: DataTypes.STRING,
+                    allowNull: false,
+                }
             },
             {
                 tableName: 'bills',

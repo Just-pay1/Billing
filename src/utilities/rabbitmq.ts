@@ -48,14 +48,15 @@ export class RabbitMQ {
         }
     }
 
-    public async sendMail(message: object) {
-        await this.mailChannel?.sendToQueue(MAILS_QUEUE!, Buffer.from(JSON.stringify(message)))
+    public sendMail(message: object) {
+        this.mailChannel?.sendToQueue(MAILS_QUEUE!, Buffer.from(JSON.stringify(message)))
     }
 
     public async consumeFromMerchantsQueue(){
         console.log(`== Started to consume from ${ACTIVE_MERCHANTS} ==`)
         await this.activeMerchantsChannel?.consume(ACTIVE_MERCHANTS!, async (msg: ConsumeMessage | null) => {
             if (msg) {
+                console.log(`got this msg ${msg}`)
                 const data = JSON.parse(msg.content.toString());
                 const shouldAck = await InternalService.createActiveMerchant(data)
                 shouldAck ? this.activeMerchantsChannel?.ack(msg) : this.activeMerchantsChannel?.nack(msg, false, false) ;
