@@ -2,7 +2,7 @@ import { Router } from "express";
 import { BillController } from "../controllers/bills-controller";
 import asyncHandler from "../middlewares/asyncWrapper";
 import { validateSchemas } from "../middlewares/validateRequests";
-import { billDetails, deleteBill } from "../schemas/bill-schemas";
+import { billDetails, billDetailsViaID, updateBillStatus } from "../schemas/bill-schemas";
 
 
 export class BillsRoutes {
@@ -30,8 +30,18 @@ export class BillsRoutes {
         )
 
         this.router.post('/delete-bill', 
-            validateSchemas(deleteBill),
+            validateSchemas(billDetailsViaID),
             asyncHandler(this.controller.deleteBill)
+        )
+
+        this.router.get('/bill-details', 
+            validateSchemas(billDetailsViaID, 'query'),
+            asyncHandler(this.controller.billDetails)
+        )
+
+        this.router.post('/update-bill-status', 
+            validateSchemas(updateBillStatus),
+            asyncHandler(this.controller.updateBillStatus)
         )
     }
     
