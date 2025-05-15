@@ -25,7 +25,7 @@ export class BillService {
             throw WebError.BadRequest(`bill_code is invalid, please review`);
         }
 
-        const {fee, total_amount} = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +electricalBill.dataValues.amount, merchant.dataValues.fee_from)
+        const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +electricalBill.dataValues.amount, merchant.dataValues.fee_from)
 
         // create and return the new bill 
         const bill = await Bill.create({
@@ -43,7 +43,7 @@ export class BillService {
             model: 'ElectricBill'
         })
 
-        return {...bill.dataValues, total_amount}
+        return { ...bill.dataValues, total_amount }
     }
 
     public async getWaterBill(merchant_id: string, bill_code: string) {
@@ -60,7 +60,7 @@ export class BillService {
             throw WebError.BadRequest(`bill_code is invalid, please review`);
         }
 
-        const {fee, total_amount} = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +waterBill.dataValues.amount, merchant.dataValues.fee_from)
+        const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +waterBill.dataValues.amount, merchant.dataValues.fee_from)
 
 
         // create and return the new bill 
@@ -79,7 +79,7 @@ export class BillService {
             model: 'WaterBill'
         })
 
-        return {...bill.dataValues, total_amount}
+        return { ...bill.dataValues, total_amount }
     }
 
     public async getGasBill(merchant_id: string, bill_code: string) {
@@ -96,7 +96,7 @@ export class BillService {
             throw WebError.BadRequest(`bill_code is invalid, please review`);
         }
 
-        const {fee, total_amount} = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +gasBill.dataValues.amount, merchant.dataValues.fee_from)
+        const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +gasBill.dataValues.amount, merchant.dataValues.fee_from)
 
 
         // create and return the new bill 
@@ -115,7 +115,7 @@ export class BillService {
             model: 'GasBill'
         })
 
-        return {...bill.dataValues, total_amount}
+        return { ...bill.dataValues, total_amount }
     }
 
     public async deleteBill(bill_id: string) {
@@ -159,20 +159,18 @@ export class BillService {
 
 
         try {
-            await mysql.transaction(async (t) => {
-                const model = bill.dataValues.model as any
-                await model.update({
-                    status: 'paid',
-                    payment_date: new Date
-                })
+            const model = bill.dataValues.model as any
+            await model.update({
+                status: 'paid',
+                payment_date: new Date
+            })
 
-                await bill.update({
-                    status: 'paid',
-                    payment_date: new Date,
-                    user_id,
-                    paid_amount
-                })
-            });
+            await bill.update({
+                status: 'paid',
+                payment_date: new Date,
+                user_id,
+                paid_amount
+            })
         } catch (error) {
             console.error('Transaction failed:', error);
             throw WebError.InternalServerError(`couldn't update bill status due to ${error}, please review`)

@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize";
 import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USERNAME } from "../config";
 import { Bill } from "../models/bill";
 import { ActiveMerchants } from "../models/merchant";
+import { Service } from "../models/services";
 
 
 export const mysql = new Sequelize(
@@ -30,10 +31,12 @@ export async function dbConnection() {
         // init models 
         Bill.initialize(mysql);
         ActiveMerchants.initialize(mysql);
+        Service.initialize(mysql);
 
         // relations
         ActiveMerchants.associate();
         Bill.associate();
+        Service.associate();
 
         await mysql.authenticate();
         await mysql.sync({ force: false });
