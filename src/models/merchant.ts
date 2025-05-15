@@ -1,5 +1,6 @@
 import { Model, DataTypes, Sequelize } from 'sequelize';
 import { Bill } from './bill';
+import { Service } from './services';
 
 export interface MerchantAttributes {
     merchant_id: string;
@@ -26,6 +27,7 @@ export interface MerchantAttributes {
     longitude: string;
     latitude: string;
     fee_from: 'user' | 'merchant';
+    service_id: string;
 }
 
 interface MerchantCreationAttributes extends MerchantAttributes { }
@@ -58,6 +60,7 @@ export class ActiveMerchants
     declare longitude: string;
     declare latitude: string;
     declare fee_from: 'user' | 'merchant';
+    declare service_id: string;
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
 
@@ -169,6 +172,16 @@ export class ActiveMerchants
                     type: DataTypes.ENUM('user', 'merchant'),
                     defaultValue: 'user',
                     allowNull: false,
+                },
+                service_id: {
+                    type: DataTypes.UUID,
+                    allowNull: false,
+                    references: {
+                        model: 'services', // table name
+                        key: 'id'
+                    },
+                    onUpdate: 'CASCADE',
+                    onDelete: 'CASCADE'
                 }
             },
             {
@@ -184,6 +197,13 @@ export class ActiveMerchants
         ActiveMerchants.hasMany(Bill, {
             foreignKey: 'merchant_id',
             as: 'bills'
+        });
+
+        ActiveMerchants.belongsTo(Service, {
+            foreignKey: 'service_id',
+            as: 'service',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE',
         });
     }
 
