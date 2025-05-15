@@ -39,7 +39,7 @@ export async function dbConnection() {
         Service.associate();
 
         await mysql.authenticate();
-        await mysql.sync({ force: false });
+        await mysql.sync({ alter: true });
         console.log(`== Connection to BILLING DB has been established successfully! ==`)
     } catch (error) {
         console.log(`unable to connect to BILLING DB:`, error)
