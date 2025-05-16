@@ -42,6 +42,7 @@ export class BillController {
         const paid_amount = +req.body.paid_amount
         // const payment_method = req.body.payment_method
         const response = await this.service.updateBillStatus(bill_id, user_id, paid_amount)
+        responseHandler(res, 200, 'Bill is updated successfully!', response)
 
     } 
 

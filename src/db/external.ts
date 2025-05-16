@@ -5,7 +5,7 @@ import { GasBill } from "../models/externals/gasBills";
 import { DB_USERNAME, DB_PASSWORD, DB_HOST, EXTERNAL_DB_NAME } from "../config";
 
 
-export const mysql = new Sequelize(
+export const external_db = new Sequelize(
     {
         database: EXTERNAL_DB_NAME,
         username: DB_USERNAME,
@@ -28,9 +28,9 @@ export const mysql = new Sequelize(
 
 export async function externalDbConnection() {
     try {
-        await ElectricBill.initialize(mysql);
-        await WaterBill.initialize(mysql);
-        await GasBill.initialize(mysql);
+        await ElectricBill.initialize(external_db);
+        await WaterBill.initialize(external_db);
+        await GasBill.initialize(external_db);
 
         // await ElectricBill.generateBills()
         // await WaterBill.generateBills()
@@ -38,8 +38,8 @@ export async function externalDbConnection() {
 
 
 
-        await mysql.authenticate();
-        await mysql.sync({ force: false });
+        await external_db.authenticate();
+        await external_db.sync({ force: false });
         console.log(`== Connection to External DB has been established successfully! ==`)
     } catch (error) {
         console.log(`unable to connect to External DB:`, error)

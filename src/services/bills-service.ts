@@ -1,5 +1,4 @@
-import { log } from "console";
-import { mysql } from "../db/config";
+import { external_db } from "../db/external";
 import { Bill } from "../models/bill";
 import { ElectricBill } from "../models/externals/electricalBills";
 import { GasBill } from "../models/externals/gasBills";
@@ -157,13 +156,24 @@ export class BillService {
             throw WebError.BadRequest(`bill_id is invalid, please review`);
         }
 
+        if (bill.dataValues.status === "paid") {
+            throw WebError.BadRequest(`This bill is already paid, please review`);
+        }
+
 
         try {
-            const model = bill.dataValues.model as any
+            const modelName = bill.dataValues.model
+            const model = external_db.models[modelName];
             await model.update({
                 status: 'paid',
                 payment_date: new Date
-            })
+            },
+                {
+                    where: {
+                        bill_code: bill.dataValues.bill_code
+                    }
+                }
+            )
 
             await bill.update({
                 status: 'paid',
