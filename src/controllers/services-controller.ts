@@ -18,4 +18,11 @@ export class ServiceController {
         const response = await this.service.create(req.body.service_type)
         responseHandler(res, 200, 'Service created successfully!', response)
     }
+
+    public details = async (req: Request, res: Response, next: NextFunction) => {
+        const response = await this.service.details(req.body.service_id);
+        responseHandler(res, 200, 'Service fetched successfully!', response)
+    }
+
+
 }

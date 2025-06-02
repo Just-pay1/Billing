@@ -13,8 +13,8 @@ export class ServicesRoutes {
     }
 
     private initializeUserRoutes(){
-        this.router.get('/list-all-services', 
-            validateSchemas(list, 'query'),
+        this.router.post('/list-all-services', 
+            // validateSchemas(list, 'query'),
             asyncHandler(this.controller.listServices)
         )
 
@@ -22,6 +22,12 @@ export class ServicesRoutes {
             validateSchemas(create),
             asyncHandler(this.controller.createNew)
         )
+
+        this.router.post('/service-details', 
+            // validateSchemas(create),
+            asyncHandler(this.controller.details)
+        )
+
     }
     
 
