@@ -10,7 +10,7 @@ export class ServiceController {
     }
 
     public listServices = async (req: Request, res: Response, next: NextFunction) => {
-        const response = await this.service.list(req)
+        const response = await this.service.list()
         responseHandler(res, 200, 'List of services fetched successfully!', response)
     }
 

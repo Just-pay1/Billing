@@ -3,19 +3,7 @@ import { Service } from '../models/services';
 import { WebError } from '../utilities/web-errors';
 
 export class ServicesService {
-    async list(req: Request) {
-        // const page = req.query.page ? +req.query.page : -1;
-        // const limit = req.query.limit ? +req.query.limit : 10;
-        // const offset = (page - 1) * limit;
-        // let where: any;
-
-        // if (page != -1) {
-        //     where = {
-        //         offset,
-        //         limit
-        //     }
-        // }
-
+    async list() {
         const { count, rows } = await Service.findAndCountAll()
         const response = {
             count,
@@ -30,11 +18,11 @@ export class ServicesService {
         if(!service) {
             throw WebError.BadRequest('invalid service_id, please review.')
         }
-        return service;
+        return service.dataValues;
     }
 
     async create(service_type: string) {
-        const oldService = await Service.findOne({ where: {service_type} })
+        const oldService = await Service.findOne({ where: { service_type } })
 
         if(oldService){
             throw WebError.BadRequest(`This service already exists, please review.`)

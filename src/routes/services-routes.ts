@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { ServiceController } from "../controllers/services-controller";
 import { validateSchemas } from "../middlewares/validateRequests";
-import { create, list } from "../schemas/services-schemas";
+import { create } from "../schemas/services-schemas";
 import asyncHandler from "../middlewares/asyncWrapper";
 
 export class ServicesRoutes {
@@ -14,17 +14,15 @@ export class ServicesRoutes {
 
     private initializeUserRoutes(){
         this.router.post('/list-all-services', 
-            // validateSchemas(list, 'query'),
             asyncHandler(this.controller.listServices)
         )
 
-        this.router.post('/create-new', 
+        this.router.post('/create-new-service', 
             validateSchemas(create),
             asyncHandler(this.controller.createNew)
         )
 
         this.router.post('/service-details', 
-            // validateSchemas(create),
             asyncHandler(this.controller.details)
         )
 
