@@ -12,6 +12,11 @@ export const DB_PASSWORD = process.env.DB_PASSWORD;
 export const DB_HOST = process.env.DB_HOST;
 export const EXTERNAL_DB_NAME = process.env.EXTERNAL_DB_NAME;
 
+// SERVICES URLS
+export const MERCHANT_URL = process.env.MERCHANT_URL;
+export const CRM_URL = process.env.CRM_URL;
+
+
 // RABBITMQ 
 export const RABBITMQ_IP = process.env.RABBITMQ_IP;
 export const RABBITMQ_PORT = process.env.RABBITMQ_PORT;
