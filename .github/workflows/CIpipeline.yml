@@ -20,6 +20,16 @@ jobs:
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
 
+        
+
+    - name: Login to Azure Container Registry for k8s
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.ACR_USERNAME_aks }}.azurecr.io
+        username: ${{ secrets.ACR_USERNAME_aks }}
+        password: ${{ secrets.ACR_PASSWORD_aks }}    
+   
+
     - name: Build Docker image
       run: |
         docker build  \
@@ -41,7 +51,17 @@ jobs:
       run: |
         docker tag billing ${{ secrets.ACR_USERNAME }}.azurecr.io/billing:latest
 
+    - name: Tag Docker image
+      run: |
+        docker tag billing ${{ secrets.ACR_USERNAME_aks }}.azurecr.io/billing:latest
+
+
+
     - name: Push Docker image to Azure Container Registry
       run: |
         docker push ${{ secrets.ACR_USERNAME }}.azurecr.io/billing:latest
+
+    - name: Push Docker image to Azure Container Registry for k8s
+      run: |
+        docker push ${{ secrets.ACR_USERNAME_aks }}.azurecr.io/billing:latest
 
