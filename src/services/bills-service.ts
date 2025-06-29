@@ -2,12 +2,64 @@ import { external_db } from "../db/external";
 import { Bill } from "../models/bill";
 import { ElectricBill } from "../models/externals/electricalBills";
 import { GasBill } from "../models/externals/gasBills";
+import { InternetBill } from "../models/externals/internetBills";
 import { WaterBill } from "../models/externals/waterBills";
 import { ActiveMerchants } from "../models/merchant";
 import { calcFee } from "../utilities/calcFees";
+import { makeRequest } from "../utilities/makeInternalRequest";
 import { WebError } from "../utilities/web-errors";
 
 export class BillService {
+
+    public async getBill(service_id: string, merchant_id: string, bill_code: string) {
+        const merchant = await ActiveMerchants.findByPk(merchant_id);
+        if (!merchant) {
+            throw WebError.BadRequest(`merchant_id is invalid, please review`);
+        }
+        const service = await makeRequest({
+            method: 'post',
+            service: 'crm',
+            path: '/services/get-service',
+            context: { service_id }
+        })
+
+        if (!service) {
+            throw WebError.BadRequest(`service_id is invalid, please review`);
+        }
+
+        if (merchant.dataValues.service_id !== service.service_id) {
+            throw WebError.BadRequest(`service_id is not valid for this merchant, please review`);
+        }
+
+        // check for the service type and call the appropriate model 
+        const bill = await this.getBillBYItsType(service.service_type, bill_code);
+        if (!bill) {
+            throw WebError.BadRequest(`bill_code is invalid, please review`);
+        }
+        // after retrieving the bill calc fees and save the bill and its details to our db 
+        const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +bill.dataValues.amount, merchant.dataValues.fee_from)
+        // create and return the new bill 
+        const newBill = await Bill.create({
+            bill_id: bill.dataValues.bill_id,
+            bill_code: bill.dataValues.bill_code,
+            merchant_id,
+            amount: Number(bill.dataValues.amount),
+            fee,
+            due_date: bill.dataValues.due_date,
+            issue_date: bill.dataValues.issue_date,
+            status: bill.dataValues.status,
+            payment_date: null,
+            // payment_method: null,bill
+            user_id: null,
+            model: 'ElectricBill'
+        })
+
+        // then return the bill derails with the total amount
+        return { ...newBill.dataValues, total_amount }
+ 
+
+
+    }
 
     public async getElectricBill(merchant_id: string, bill_code: string) {
         // check if the merchant is correct 
@@ -115,6 +167,61 @@ export class BillService {
         })
 
         return { ...bill.dataValues, total_amount }
+    }
+
+    public async getInternetBill(merchant_id: string, bill_code: string) {
+        // check if the merchant is correct 
+        const merchant = await ActiveMerchants.findByPk(merchant_id);
+        if (!merchant) {
+            throw WebError.BadRequest(`merchant_id is invalid, please review`);
+        }
+
+        // get the bill and save it to our db
+        const internetBill = await external_db.models.InternetBill.findOne({ where: { bill_code } });
+
+        if (!internetBill) {
+            throw WebError.BadRequest(`bill_code is invalid, please review`);
+        }
+
+        const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +internetBill.dataValues.amount, merchant.dataValues.fee_from)
+
+        // create and return the new bill 
+        const bill = await Bill.create({
+            bill_id: internetBill.dataValues.bill_id,
+            bill_code: internetBill.dataValues.bill_code,
+            merchant_id,
+            amount: Number(internetBill.dataValues.amount),
+            fee,
+            due_date: internetBill.dataValues.due_date,
+            issue_date: internetBill.dataValues.issue_date,
+            status: internetBill.dataValues.status,
+            payment_date: null,
+            // payment_method: null,
+            user_id: null,
+            model: 'GasBill'
+        })
+
+        return { ...bill.dataValues, total_amount }
+    }
+
+    private async getBillBYItsType(service_type: string, bill_code: string) {
+        if (service_type.includes('electric') || service_type.includes('electricity')) {
+            return await ElectricBill.findOne({ where: { bill_code } });
+        }
+
+        if (service_type.includes('gas')) {
+            return await GasBill.findOne({ where: { bill_code } });
+        }
+
+        if (service_type.includes('water')) {
+            return await WaterBill.findOne({ where: { bill_code } });
+        }
+
+        if (service_type.includes('internet')) {
+            return await InternetBill.findOne({ where: { bill_code } });
+        }
+
+        return null;
     }
 
     public async deleteBill(bill_id: string) {

@@ -9,6 +9,14 @@ export class BillController {
         this.service = new BillService();
     }
 
+    public getBillDetails = async (req: Request, res: Response, next: NextFunction) => {
+        const merchant_id = req.body.merchant_id;
+        const service_id = req.body.service_id;
+        const bill_code = req.body.bill_code;
+        const response = await this.service.getBill(service_id, merchant_id, bill_code);
+        responseHandler(res, 200, 'Bill is fetched successfully!', response)
+    }
+
     public electricBillDetails = async (req: Request, res: Response, next: NextFunction) => {
         const merchant_id = req.body.merchant_id;
         const bill_code = req.body.bill_code;
@@ -27,6 +35,13 @@ export class BillController {
         const merchant_id = req.body.merchant_id;
         const bill_code = req.body.bill_code;
         const response = await this.service.getGasBill(merchant_id, bill_code)
+        responseHandler(res, 200, 'Bill is fetched successfully!', response)
+    }
+
+    public internetBillDetails = async (req: Request, res: Response, next: NextFunction) => {
+        const merchant_id = req.body.merchant_id;
+        const bill_code = req.body.bill_code;
+        const response = await this.service.getInternetBill(merchant_id, bill_code)
         responseHandler(res, 200, 'Bill is fetched successfully!', response)
     }
 

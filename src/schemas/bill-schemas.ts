@@ -1,5 +1,13 @@
 import Joi from "joi";
 
+export const details  = Joi.object(
+    {
+        merchant_id: Joi.string().required(),
+        service_id: Joi.string().required(),
+        bill_code: Joi.string().required(),
+    }
+)
+
 export const billDetails = Joi.object(
     {
         merchant_id: Joi.string().required(),
