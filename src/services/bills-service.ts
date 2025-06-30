@@ -23,11 +23,15 @@ export class BillService {
             context: { service_id }
         })
 
+        // console.log(merchant.dataValues)
+
+        // console.log(service)
+
         if (!service) {
             throw WebError.BadRequest(`service_id is invalid, please review`);
         }
 
-        if (merchant.dataValues.service_id !== service.service_id) {
+        if (merchant.dataValues.service_id !== service.id) {
             throw WebError.BadRequest(`service_id is not valid for this merchant, please review`);
         }
 
