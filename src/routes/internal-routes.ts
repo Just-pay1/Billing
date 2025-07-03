@@ -22,6 +22,11 @@ export class InternalRoutes {
             validateSchemas(internal.merchantTransactions),
             asyncHandler(this.controller.listSuccessfulTransactions)
         )
+
+        this.router.post('/list-all-transactions',
+            validateSchemas(internal.merchantTransactions),
+            asyncHandler(this.controller.ALLTransactions)
+        )
     }
 
 }

@@ -76,4 +76,33 @@ export class InternalService {
         return response   
     }
 
+
+    async ALLTransactions(merchant_id: string, page: number, limit: number) {
+        const merchant = await ActiveMerchants.findByPk(merchant_id);
+        if (!merchant) {
+            throw WebError.BadRequest('invalid merchant_id, please review.');
+        }
+    
+        const whereClause = {
+            merchant_id,
+        };
+    
+        let queryOptions: any = { where: whereClause };
+        
+        // Apply pagination only if page is not -1
+        if (page !== -1) {
+            const offset = (page - 1) * limit;
+            queryOptions.offset = offset;
+            queryOptions.limit = limit;
+        }
+    
+        const { count, rows } = await Bill.findAndCountAll(queryOptions);
+        
+        return {
+            count,
+            activePage: page === -1 ? null : page, // or handle -1 case appropriately
+            rows
+        };
+    }
+
 }
