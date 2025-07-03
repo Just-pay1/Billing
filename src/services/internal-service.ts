@@ -15,66 +15,66 @@ export class InternalService {
         }
     }
 
-    async listFailedTransactions(merchant_id: string, page: number, limit: number) {
-        const offset = (page - 1) * limit;
-        let where: any = {
-            merchant_id,
-            status: 'failed'
-        }
+    // async listFailedTransactions(merchant_id: string, page: number, limit: number) {
+    //     const offset = (page - 1) * limit;
+    //     let where: any = {
+    //         merchant_id,
+    //         status: 'failed'
+    //     }
 
-        const merchant = await ActiveMerchants.findByPk(merchant_id);
-        if (!merchant) {
-            throw WebError.BadRequest('invalid merchant_id, please review.');
-        }
+    //     const merchant = await ActiveMerchants.findByPk(merchant_id);
+    //     if (!merchant) {
+    //         throw WebError.BadRequest('invalid merchant_id, please review.');
+    //     }
 
-        if (page != -1) {
-            where = {
-                offset,
-                limit,
-                merchant_id,
-                status: 'failed'
-            }
-        }
+    //     if (page != -1) {
+    //         where = {
+    //             offset,
+    //             limit,
+    //             merchant_id,
+    //             status: 'failed'
+    //         }
+    //     }
 
-        const { count, rows } = await Bill.findAndCountAll(where);
-        const response = {
-            count,
-            activePage: page,
-            rows
-        }
-        return response
+    //     const { count, rows } = await Bill.findAndCountAll(where);
+    //     const response = {
+    //         count,
+    //         activePage: page,
+    //         rows
+    //     }
+    //     return response
 
-    }
+    // }
 
-    async listSuccessfulTransactions(merchant_id: string, page: number, limit: number) {
-        const offset = (page - 1) * limit;
-        let where: any = {
-            merchant_id,
-            status: 'paid'
-        }
+    // async listSuccessfulTransactions(merchant_id: string, page: number, limit: number) {
+    //     const offset = (page - 1) * limit;
+    //     let where: any = {
+    //         merchant_id,
+    //         status: 'paid'
+    //     }
 
-        const merchant = await ActiveMerchants.findByPk(merchant_id);
-        if (!merchant) {
-            throw WebError.BadRequest('invalid merchant_id, please review.');
-        }
+    //     const merchant = await ActiveMerchants.findByPk(merchant_id);
+    //     if (!merchant) {
+    //         throw WebError.BadRequest('invalid merchant_id, please review.');
+    //     }
 
-        if (page != -1) {
-            where = {
-                offset,
-                limit,
-                merchant_id,
-                status: 'paid'
-            }
-        }
+    //     if (page != -1) {
+    //         where = {
+    //             offset,
+    //             limit,
+    //             merchant_id,
+    //             status: 'paid'
+    //         }
+    //     }
 
-        const { count, rows } = await Bill.findAndCountAll(where);
-        const response = {
-            count,
-            activePage: page,
-            rows
-        }
-        return response   
-    }
+    //     const { count, rows } = await Bill.findAndCountAll(where);
+    //     const response = {
+    //         count,
+    //         activePage: page,
+    //         rows
+    //     }
+    //     return response   
+    // }
 
 
     async ALLTransactions(merchant_id: string, page: number, limit: number) {

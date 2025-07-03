@@ -13,15 +13,15 @@ export class InternalRoutes {
     }
 
     private initializeInternalRoutes(){
-        this.router.post('/list-failled-transactions',
-            validateSchemas(internal.merchantTransactions),
-            asyncHandler(this.controller.listFailedTransactions)
-        )
+        // this.router.post('/list-failled-transactions',
+        //     validateSchemas(internal.merchantTransactions),
+        //     asyncHandler(this.controller.listFailedTransactions)
+        // )
 
-        this.router.post('/list-successful-transactions',
-            validateSchemas(internal.merchantTransactions),
-            asyncHandler(this.controller.listSuccessfulTransactions)
-        )
+        // this.router.post('/list-successful-transactions',
+        //     validateSchemas(internal.merchantTransactions),
+        //     asyncHandler(this.controller.listSuccessfulTransactions)
+        // )
 
         this.router.post('/list-all-transactions',
             validateSchemas(internal.merchantTransactions),
