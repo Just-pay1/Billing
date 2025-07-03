@@ -36,12 +36,18 @@ export class BillService {
         }
 
         // check for the service type and call the appropriate model 
-        const bill = await this.getBillBYItsType(service.service_type, bill_code);
+        const { bill, model, category } = await this.getBillBYItsType(service.service_type, bill_code);
         if (!bill) {
             throw WebError.BadRequest(`bill_code is invalid, please review`);
         }
         // after retrieving the bill calc fees and save the bill and its details to our db 
         const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +bill.dataValues.amount, merchant.dataValues.fee_from)
+
+        const oldBill = await Bill.findOne({ where: {bill_code} })
+        if (oldBill) {
+            return { ...oldBill.dataValues, total_amount, category }
+        }
+
         // create and return the new bill 
         const newBill = await Bill.create({
             bill_id: bill.dataValues.bill_id,
@@ -55,11 +61,11 @@ export class BillService {
             payment_date: null,
             // payment_method: null,bill
             user_id: null,
-            model: 'ElectricBill'
+            model
         })
 
         // then return the bill derails with the total amount
-        return { ...newBill.dataValues, total_amount }
+        return { ...newBill.dataValues, total_amount, category }
  
 
 
@@ -208,21 +214,26 @@ export class BillService {
         return { ...bill.dataValues, total_amount }
     }
 
-    private async getBillBYItsType(service_type: string, bill_code: string) {
+    private async getBillBYItsType(service_type: string, bill_code: string): Promise<any | null> {
         if (service_type.includes('electric') || service_type.includes('electricity')) {
-            return await ElectricBill.findOne({ where: { bill_code } });
+            const bill = await ElectricBill.findOne({ where: { bill_code } });
+            return { bill, model: 'ElectricBill', category: 'electric_bill' }
         }
 
         if (service_type.includes('gas')) {
-            return await GasBill.findOne({ where: { bill_code } });
+            const bill = await GasBill.findOne({ where: { bill_code } });
+            return { bill, model: 'GasBill', category: 'gas_bill' }
+
         }
 
         if (service_type.includes('water')) {
-            return await WaterBill.findOne({ where: { bill_code } });
+            const bill =  await WaterBill.findOne({ where: { bill_code } });
+            return { bill, model: 'WaterBill', category: 'water_bill' }
         }
 
         if (service_type.includes('internet')) {
-            return await InternetBill.findOne({ where: { bill_code } });
+            const bill = await InternetBill.findOne({ where: { bill_code } });
+            return { bill, model: 'InternetBill', category: 'internet_bill' }   
         }
 
         return null;
