@@ -14,5 +14,6 @@ async function startApp() {
 
 const server = app.listen(port, () => {
     console.log(`Listening on ${port}`);
+    console.log("Testing server")
     startApp();
 })
