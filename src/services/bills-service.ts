@@ -38,15 +38,10 @@ export class BillService {
         // check for the service type and call the appropriate model 
         const { bill, model, category } = await this.getBillBYItsType(service.service_type, bill_code);
         if (!bill) {
-            throw WebError.BadRequest(`bill_code is invalid, please review`);
+            throw WebError.BadRequest(`There is no pending bill with this bill_code, please review`);
         }
         // after retrieving the bill calc fees and save the bill and its details to our db 
         const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +bill.dataValues.amount, merchant.dataValues.fee_from)
-
-        const oldBill = await Bill.findOne({ where: {bill_code} })
-        if (oldBill) {
-            return { ...oldBill.dataValues, total_amount, category }
-        }
 
         // create and return the new bill 
         const newBill = await Bill.create({
@@ -71,168 +66,168 @@ export class BillService {
 
     }
 
-    public async getElectricBill(merchant_id: string, bill_code: string) {
-        // check if the merchant is correct 
-        const merchant = await ActiveMerchants.findByPk(merchant_id);
-        console.log(merchant?.dataValues)
-        if (!merchant) {
-            throw WebError.BadRequest(`merchant_id is invalid, please review`);
-        }
+    // public async getElectricBill(merchant_id: string, bill_code: string) {
+    //     // check if the merchant is correct 
+    //     const merchant = await ActiveMerchants.findByPk(merchant_id);
+    //     console.log(merchant?.dataValues)
+    //     if (!merchant) {
+    //         throw WebError.BadRequest(`merchant_id is invalid, please review`);
+    //     }
 
-        // get the bill and save it to our db
-        const electricalBill = await ElectricBill.findOne({ where: { bill_code } });
+    //     // get the bill and save it to our db
+    //     const electricalBill = await ElectricBill.findOne({ where: { bill_code } });
 
-        if (!electricalBill) {
-            throw WebError.BadRequest(`bill_code is invalid, please review`);
-        }
+    //     if (!electricalBill) {
+    //         throw WebError.BadRequest(`bill_code is invalid, please review`);
+    //     }
 
-        const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +electricalBill.dataValues.amount, merchant.dataValues.fee_from)
+    //     const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +electricalBill.dataValues.amount, merchant.dataValues.fee_from)
 
-        // create and return the new bill 
-        const bill = await Bill.create({
-            bill_id: electricalBill.dataValues.bill_id,
-            bill_code: electricalBill.dataValues.bill_code,
-            merchant_id,
-            amount: Number(electricalBill.dataValues.amount),
-            fee,
-            due_date: electricalBill.dataValues.due_date,
-            issue_date: electricalBill.dataValues.issue_date,
-            status: electricalBill.dataValues.status,
-            payment_date: null,
-            // payment_method: null,
-            user_id: null,
-            model: 'ElectricBill'
-        })
+    //     // create and return the new bill 
+    //     const bill = await Bill.create({
+    //         bill_id: electricalBill.dataValues.bill_id,
+    //         bill_code: electricalBill.dataValues.bill_code,
+    //         merchant_id,
+    //         amount: Number(electricalBill.dataValues.amount),
+    //         fee,
+    //         due_date: electricalBill.dataValues.due_date,
+    //         issue_date: electricalBill.dataValues.issue_date,
+    //         status: electricalBill.dataValues.status,
+    //         payment_date: null,
+    //         // payment_method: null,
+    //         user_id: null,
+    //         model: 'ElectricBill'
+    //     })
 
-        return { ...bill.dataValues, total_amount }
-    }
+    //     return { ...bill.dataValues, total_amount }
+    // }
 
-    public async getWaterBill(merchant_id: string, bill_code: string) {
-        // check if the merchant is correct 
-        const merchant = await ActiveMerchants.findByPk(merchant_id);
-        if (!merchant) {
-            throw WebError.BadRequest(`merchant_id is invalid, please review`);
-        }
+    // public async getWaterBill(merchant_id: string, bill_code: string) {
+    //     // check if the merchant is correct 
+    //     const merchant = await ActiveMerchants.findByPk(merchant_id);
+    //     if (!merchant) {
+    //         throw WebError.BadRequest(`merchant_id is invalid, please review`);
+    //     }
 
-        // get the bill and save it to our db
-        const waterBill = await WaterBill.findOne({ where: { bill_code } });
+    //     // get the bill and save it to our db
+    //     const waterBill = await WaterBill.findOne({ where: { bill_code } });
 
-        if (!waterBill) {
-            throw WebError.BadRequest(`bill_code is invalid, please review`);
-        }
+    //     if (!waterBill) {
+    //         throw WebError.BadRequest(`bill_code is invalid, please review`);
+    //     }
 
-        const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +waterBill.dataValues.amount, merchant.dataValues.fee_from)
-
-
-        // create and return the new bill 
-        const bill = await Bill.create({
-            bill_id: waterBill.dataValues.bill_id,
-            bill_code: waterBill.dataValues.bill_code,
-            merchant_id,
-            amount: Number(waterBill.dataValues.amount),
-            fee,
-            due_date: waterBill.dataValues.due_date,
-            issue_date: waterBill.dataValues.issue_date,
-            status: waterBill.dataValues.status,
-            payment_date: null,
-            // payment_method: null,
-            user_id: null,
-            model: 'WaterBill'
-        })
-
-        return { ...bill.dataValues, total_amount }
-    }
-
-    public async getGasBill(merchant_id: string, bill_code: string) {
-        // check if the merchant is correct 
-        const merchant = await ActiveMerchants.findByPk(merchant_id);
-        if (!merchant) {
-            throw WebError.BadRequest(`merchant_id is invalid, please review`);
-        }
-
-        // get the bill and save it to our db
-        const gasBill = await GasBill.findOne({ where: { bill_code } });
-
-        if (!gasBill) {
-            throw WebError.BadRequest(`bill_code is invalid, please review`);
-        }
-
-        const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +gasBill.dataValues.amount, merchant.dataValues.fee_from)
+    //     const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +waterBill.dataValues.amount, merchant.dataValues.fee_from)
 
 
-        // create and return the new bill 
-        const bill = await Bill.create({
-            bill_id: gasBill.dataValues.bill_id,
-            bill_code: gasBill.dataValues.bill_code,
-            merchant_id,
-            amount: Number(gasBill.dataValues.amount),
-            fee,
-            due_date: gasBill.dataValues.due_date,
-            issue_date: gasBill.dataValues.issue_date,
-            status: gasBill.dataValues.status,
-            payment_date: null,
-            // payment_method: null,
-            user_id: null,
-            model: 'GasBill'
-        })
+    //     // create and return the new bill 
+    //     const bill = await Bill.create({
+    //         bill_id: waterBill.dataValues.bill_id,
+    //         bill_code: waterBill.dataValues.bill_code,
+    //         merchant_id,
+    //         amount: Number(waterBill.dataValues.amount),
+    //         fee,
+    //         due_date: waterBill.dataValues.due_date,
+    //         issue_date: waterBill.dataValues.issue_date,
+    //         status: waterBill.dataValues.status,
+    //         payment_date: null,
+    //         // payment_method: null,
+    //         user_id: null,
+    //         model: 'WaterBill'
+    //     })
 
-        return { ...bill.dataValues, total_amount }
-    }
+    //     return { ...bill.dataValues, total_amount }
+    // }
 
-    public async getInternetBill(merchant_id: string, bill_code: string) {
-        // check if the merchant is correct 
-        const merchant = await ActiveMerchants.findByPk(merchant_id);
-        if (!merchant) {
-            throw WebError.BadRequest(`merchant_id is invalid, please review`);
-        }
+    // public async getGasBill(merchant_id: string, bill_code: string) {
+    //     // check if the merchant is correct 
+    //     const merchant = await ActiveMerchants.findByPk(merchant_id);
+    //     if (!merchant) {
+    //         throw WebError.BadRequest(`merchant_id is invalid, please review`);
+    //     }
 
-        // get the bill and save it to our db
-        const internetBill = await external_db.models.InternetBill.findOne({ where: { bill_code } });
+    //     // get the bill and save it to our db
+    //     const gasBill = await GasBill.findOne({ where: { bill_code } });
 
-        if (!internetBill) {
-            throw WebError.BadRequest(`bill_code is invalid, please review`);
-        }
+    //     if (!gasBill) {
+    //         throw WebError.BadRequest(`bill_code is invalid, please review`);
+    //     }
 
-        const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +internetBill.dataValues.amount, merchant.dataValues.fee_from)
+    //     const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +gasBill.dataValues.amount, merchant.dataValues.fee_from)
 
-        // create and return the new bill 
-        const bill = await Bill.create({
-            bill_id: internetBill.dataValues.bill_id,
-            bill_code: internetBill.dataValues.bill_code,
-            merchant_id,
-            amount: Number(internetBill.dataValues.amount),
-            fee,
-            due_date: internetBill.dataValues.due_date,
-            issue_date: internetBill.dataValues.issue_date,
-            status: internetBill.dataValues.status,
-            payment_date: null,
-            // payment_method: null,
-            user_id: null,
-            model: 'GasBill'
-        })
 
-        return { ...bill.dataValues, total_amount }
-    }
+    //     // create and return the new bill 
+    //     const bill = await Bill.create({
+    //         bill_id: gasBill.dataValues.bill_id,
+    //         bill_code: gasBill.dataValues.bill_code,
+    //         merchant_id,
+    //         amount: Number(gasBill.dataValues.amount),
+    //         fee,
+    //         due_date: gasBill.dataValues.due_date,
+    //         issue_date: gasBill.dataValues.issue_date,
+    //         status: gasBill.dataValues.status,
+    //         payment_date: null,
+    //         // payment_method: null,
+    //         user_id: null,
+    //         model: 'GasBill'
+    //     })
+
+    //     return { ...bill.dataValues, total_amount }
+    // }
+
+    // public async getInternetBill(merchant_id: string, bill_code: string) {
+    //     // check if the merchant is correct 
+    //     const merchant = await ActiveMerchants.findByPk(merchant_id);
+    //     if (!merchant) {
+    //         throw WebError.BadRequest(`merchant_id is invalid, please review`);
+    //     }
+
+    //     // get the bill and save it to our db
+    //     const internetBill = await external_db.models.InternetBill.findOne({ where: { bill_code } });
+
+    //     if (!internetBill) {
+    //         throw WebError.BadRequest(`bill_code is invalid, please review`);
+    //     }
+
+    //     const { fee, total_amount } = calcFee(merchant.dataValues.commission_setup, +merchant.dataValues.commission_amount, +internetBill.dataValues.amount, merchant.dataValues.fee_from)
+
+    //     // create and return the new bill 
+    //     const bill = await Bill.create({
+    //         bill_id: internetBill.dataValues.bill_id,
+    //         bill_code: internetBill.dataValues.bill_code,
+    //         merchant_id,
+    //         amount: Number(internetBill.dataValues.amount),
+    //         fee,
+    //         due_date: internetBill.dataValues.due_date,
+    //         issue_date: internetBill.dataValues.issue_date,
+    //         status: internetBill.dataValues.status,
+    //         payment_date: null,
+    //         // payment_method: null,
+    //         user_id: null,
+    //         model: 'GasBill'
+    //     })
+
+    //     return { ...bill.dataValues, total_amount }
+    // }
 
     private async getBillBYItsType(service_type: string, bill_code: string): Promise<any | null> {
         if (service_type.includes('electric') || service_type.includes('electricity')) {
-            const bill = await ElectricBill.findOne({ where: { bill_code } });
+            const bill = await ElectricBill.findOne({ where: { bill_code, status: "pending" } });
             return { bill, model: 'ElectricBill', category: 'electric_bill' }
         }
 
         if (service_type.includes('gas')) {
-            const bill = await GasBill.findOne({ where: { bill_code } });
+            const bill = await GasBill.findOne({ where: { bill_code, status: "pending" } });
             return { bill, model: 'GasBill', category: 'gas_bill' }
 
         }
 
         if (service_type.includes('water')) {
-            const bill =  await WaterBill.findOne({ where: { bill_code } });
+            const bill =  await WaterBill.findOne({ where: { bill_code, status: "pending" } });
             return { bill, model: 'WaterBill', category: 'water_bill' }
         }
 
         if (service_type.includes('internet')) {
-            const bill = await InternetBill.findOne({ where: { bill_code } });
+            const bill = await InternetBill.findOne({ where: { bill_code, status: "pending" } });
             return { bill, model: 'InternetBill', category: 'internet_bill' }   
         }
 
@@ -251,6 +246,7 @@ export class BillService {
         return true
     }
 
+    // internal
     public async getBillDetails(bill_id: string) {
         const bill = await Bill.findByPk(bill_id, {
             include: [{

@@ -19,25 +19,25 @@ export class BillsRoutes {
             asyncHandler(this.controller.getBillDetails)
         )
 
-        this.router.get('/electric-bill-details', 
-            validateSchemas(billDetails, 'query'),
-            asyncHandler(this.controller.electricBillDetails)
-        )
+        // this.router.get('/electric-bill-details', 
+        //     validateSchemas(billDetails, 'query'),
+        //     asyncHandler(this.controller.electricBillDetails)
+        // )
 
-        this.router.get('/water-bill-details', 
-            validateSchemas(billDetails, 'query'),
-            asyncHandler(this.controller.waterBillDetails)
-        )
+        // this.router.get('/water-bill-details', 
+        //     validateSchemas(billDetails, 'query'),
+        //     asyncHandler(this.controller.waterBillDetails)
+        // )
 
-        this.router.get('/gas-bill-details', 
-            validateSchemas(billDetails, 'query'),
-            asyncHandler(this.controller.gasBillDetails)
-        )
+        // this.router.get('/gas-bill-details', 
+        //     validateSchemas(billDetails, 'query'),
+        //     asyncHandler(this.controller.gasBillDetails)
+        // )
 
-        this.router.get('/internet-bill-details', 
-            validateSchemas(billDetails, 'query'),
-            asyncHandler(this.controller.internetBillDetails)
-        )
+        // this.router.get('/internet-bill-details', 
+        //     validateSchemas(billDetails, 'query'),
+        //     asyncHandler(this.controller.internetBillDetails)
+        // )
 
         this.router.post('/delete-bill', 
             validateSchemas(billDetailsViaID),
