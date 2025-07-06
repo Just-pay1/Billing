@@ -12,10 +12,10 @@ export interface BillAttributes {
     payment_date?: Date | null;
 }
 
-interface InternetBillCreationAttributes extends Optional<BillAttributes, 'bill_id' | 'payment_date'> { }
+interface MobileBillCreationAttributes extends Optional<BillAttributes, 'bill_id' | 'payment_date'> { }
 
-export class InternetBill
-    extends Model<BillAttributes, InternetBillCreationAttributes>
+export class MobileBill
+    extends Model<BillAttributes, MobileBillCreationAttributes>
     implements BillAttributes {
     declare bill_id: string;
     declare bill_code: string;
@@ -29,7 +29,7 @@ export class InternetBill
     declare readonly updatedAt: Date;
 
     static async initialize(sequelize: Sequelize) {
-        InternetBill.init(
+        MobileBill.init(
             {
                 bill_id: {
                     type: DataTypes.UUID,
@@ -65,8 +65,8 @@ export class InternetBill
             },
             {
                 sequelize,
-                modelName: 'InternetBill',
-                tableName: 'internet_bills',
+                modelName: 'MobileBill',
+                tableName: 'mobile_bills',
                 timestamps: true,
                 underscored: true,
             }
@@ -76,11 +76,14 @@ export class InternetBill
     static async generateBills() {
         const today = new Date();
     
+        const prefixes = ['011', '012', '010'];
+    
         const generateBillCode = () => {
+            const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
             const randomDigits = Math.floor(Math.random() * 1_0000_0000)
                 .toString()
-                .padStart(7, '0'); // ensure it’s always 7 digits
-            return `055${randomDigits}`;
+                .padStart(8, '0'); // ensure 8 digits
+            return `${prefix}${randomDigits}`; // e.g., 01154461886
         };
     
         const bills = Array.from({ length: 1000 }, () => {
@@ -89,8 +92,8 @@ export class InternetBill
     
             return {
                 bill_id: uuidv4(),
-                bill_code: generateBillCode(), // e.g., 0553192933
-                amount: parseFloat((Math.random() * 500 + 50).toFixed(2)), // random amount between 50 and 550
+                bill_code: generateBillCode(), // e.g., 01154461886
+                amount: parseFloat((Math.random() * 500 + 50).toFixed(2)), // between 50 and 550
                 issue_date: today,
                 due_date: dueDate,
                 status: 'pending' as const,
@@ -98,8 +101,8 @@ export class InternetBill
             };
         });
     
-        await InternetBill.bulkCreate(bills);
-        console.log('1000 bills with bill codes starting with 055 followed by 7 random digits have been created.');
+        await MobileBill.bulkCreate(bills);
+        console.log('1000 bills with bill codes starting with 011, 012, or 010 followed by 8 digits have been created.');
     }
     
 }
