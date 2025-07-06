@@ -32,7 +32,19 @@ export class RabbitMQ {
                 username: RABBITMQ_USERNAME,
                 password: RABBITMQ_PASSWORD,
                 vhost: RABBITMQ_USERNAME,
-                frameMax: 8192 // Ensure this is at least 8192
+                frameMax: 8192, // Ensure this is at least 8192
+                heartbeat: 60,
+            });
+
+            // logs for errors 
+            this.connection.on("error", (err) => {
+                console.log("RabbitMQ connection error:", err.message);
+            });
+
+            // reconnect 
+            this.connection.on("close", () => {
+                console.warn("RabbitMQ connection closed. Attempting to reconnect...");
+                setTimeout(() => this.init(), 5000);
             });
 
             this.activeMerchantsChannel = await this.connection.createChannel();
@@ -52,14 +64,14 @@ export class RabbitMQ {
         this.mailChannel?.sendToQueue(MAILS_QUEUE!, Buffer.from(JSON.stringify(message)))
     }
 
-    public async consumeFromMerchantsQueue(){
+    public async consumeFromMerchantsQueue() {
         console.log(`== Started to consume from ${ACTIVE_MERCHANTS} ==`)
         await this.activeMerchantsChannel?.consume(ACTIVE_MERCHANTS!, async (msg: ConsumeMessage | null) => {
             if (msg) {
                 console.log(`got this msg ${msg}`)
                 const data = JSON.parse(msg.content.toString());
                 const shouldAck = await InternalService.createActiveMerchant(data)
-                shouldAck ? this.activeMerchantsChannel?.ack(msg) : this.activeMerchantsChannel?.nack(msg, false, false) ;
+                shouldAck ? this.activeMerchantsChannel?.ack(msg) : this.activeMerchantsChannel?.nack(msg, false, false);
             }
         })
     };
