@@ -7,7 +7,7 @@ export class InternalService {
         try {
             console.log(data)
             const newMerchant = await ActiveMerchants.create({ ...data });
-            console.log(newMerchant.dataValues)
+            console.log(`Merchant with legal name of ${newMerchant.dataValues.legal_name} has created`)
             return true
         } catch (e) {
             console.log(e)
