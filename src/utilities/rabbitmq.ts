@@ -68,7 +68,7 @@ export class RabbitMQ {
         console.log(`== Started to consume from ${ACTIVE_MERCHANTS} ==`)
         await this.activeMerchantsChannel?.consume(ACTIVE_MERCHANTS!, async (msg: ConsumeMessage | null) => {
             if (msg) {
-                console.log(`got this msg ${msg}`)
+                // console.log(`got this msg ${msg}`)
                 const data = JSON.parse(msg.content.toString());
                 const shouldAck = await InternalService.createActiveMerchant(data)
                 shouldAck ? this.activeMerchantsChannel?.ack(msg) : this.activeMerchantsChannel?.nack(msg, false, false);
