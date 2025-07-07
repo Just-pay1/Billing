@@ -3,6 +3,7 @@ import { Bill } from "../models/bill";
 import { ElectricBill } from "../models/externals/electricalBills";
 import { GasBill } from "../models/externals/gasBills";
 import { InternetBill } from "../models/externals/internetBills";
+import { MobileBill } from "../models/externals/mobileBills";
 import { WaterBill } from "../models/externals/waterBills";
 import { ActiveMerchants } from "../models/merchant";
 import { calcFee } from "../utilities/calcFees";
@@ -23,9 +24,9 @@ export class BillService {
             context: { service_id }
         })
 
-        // console.log(merchant.dataValues)
+        console.log(merchant.dataValues)
 
-        // console.log(service)
+        console.log(service)
 
         if (!service) {
             throw WebError.BadRequest(`service_id is invalid, please review`);
@@ -229,6 +230,10 @@ export class BillService {
         if (service_type.includes('internet')) {
             const bill = await InternetBill.findOne({ where: { bill_code, status: "pending" } });
             return { bill, model: 'InternetBill', category: 'internet_bill' }   
+        }
+        if (service_type.includes("phone") || service_type.includes("mobile")) {
+            const bill = await MobileBill.findOne({ where: { bill_code, status: "pending" } });
+            return { bill, model: 'MobileBill', category: 'mobile_bill' }   
         }
 
         return null;
